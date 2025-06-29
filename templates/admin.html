@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      background-color: #f3f4f6;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
+    }
+    .admin-box {
+      max-width: 600px;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin: auto;
+    }
+    h2 {
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1e40af;
+    }
+    .link-btn {
+      color: #2563eb;
+      font-size: 14px;
+      margin-top: 10px;
+      display: block;
+    }
+    .feedback-card {
+      margin-top: 15px;
+      padding: 15px;
+      border-left: 5px solid #2563eb;
+      background: #f9fafb;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-box">
+    <h2>🔐 Admin Panel</h2>
+    <div id="loginArea">
+      <input type="password" id="adminPass" placeholder="Enter Admin Password">
+      <button onclick="checkPassword()">Login</button>
+      <a href="#" onclick="forgotPassword()" class="link-btn">Forgot Password?</a>
+    </div>
+    <div id="feedbackList" style="display: none;"></div>
+  </div>
+
+  <script>
+    let password = localStorage.getItem('adminPassword') || 'admin123';
+
+    function checkPassword() {
+      const input = document.getElementById('adminPass').value;
+      if (input === password) {
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('feedbackList').style.display = 'block';
+        showFeedback();
+        addChangePasswordButton();
+      } else {
+        alert("Incorrect Password");
+      }
+    }
+
+    function forgotPassword() {
+      const newPass = prompt("Reset Password:");
+      if (newPass) {
+        localStorage.setItem('adminPassword', newPass);
+        alert("Password reset successfully!");
+      }
+    }
+
+    function changePassword() {
+      const old = prompt("Enter current password:");
+      if (old === password) {
+        const newPass = prompt("Enter new password:");
+        localStorage.setItem('adminPassword', newPass);
+        password = newPass;
+        alert("Password changed successfully.");
+      } else {
+        alert("Incorrect current password.");
+      }
+    }
+
+    function addChangePasswordButton() {
+      const btn = document.createElement('button');
+      btn.textContent = "Change Password";
+      btn.onclick = changePassword;
+      btn.style.marginBottom = '15px';
+      document.getElementById('feedbackList').prepend(btn);
+    }
+
+    function showFeedback() {
+      const feedbackList = JSON.parse(localStorage.getItem('feedbacks')) || [];
+      const container = document.getElementById('feedbackList');
+      container.innerHTML = ''; // Clear previous feedbacks
+
+      if (feedbackList.length === 0) {
+        container.innerHTML = "<p>No feedback submitted yet.</p>";
+        return;
+      }
+
+      feedbackList.forEach((fb, index) => {
+        const div = document.createElement("div");
+        div.className = "feedback-card";
+        div.innerHTML = `
+          <p><strong>#${index + 1}</strong></p>
+          <p><strong>Member:</strong> ${fb.member}</p>
+          <p><strong>Project:</strong> ${fb.project}</p>
+          <p><strong>Task:</strong> ${fb.task}</p>
+          <p><strong>Difficulty:</strong> ${fb.difficulty}</p>
+          <p><strong>Comments:</strong> ${fb.comments}</p>
+          <p><strong>Email:</strong> ${fb.email || 'Not provided'}</p>
+          <p><strong>Time:</strong> ${fb.timestamp}</p>
+        `;
+
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete Feedback';
+        deleteBtn.style.backgroundColor = '#dc2626'; // red
+        deleteBtn.style.color = 'white';
+        deleteBtn.onclick = () => {
+          if (confirm('Are you sure you want to delete this feedback?')) {
+            feedbackList.splice(index, 1);
+            localStorage.setItem('feedbacks', JSON.stringify(feedbackList));
+            showFeedback(); // Re-render
+          }
+        };
+        div.appendChild(deleteBtn);
+
+        container.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit Feedback</title>
+  <style>
+    body { background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial; margin: 0; }
+    .form-container { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); width: 400px; }
+    input, textarea, select, button { width: 100%; margin-top: 5px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+    button { background-color: #2563eb; color: white; margin-top: 20px; cursor: pointer; border: none; }
+    button:hover { background-color: #1e40af; }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Team Feedback</h2>
+    <form id="feedbackForm">
+      <label>Team Member Name:</label>
+      <input type="text" id="member" required />
+
+      <label>Project Name:</label>
+      <input type="text" id="project" required />
+
+      <label>Task Name:</label>
+      <input type="text" id="task" required />
+
+      <label>Work Difficulty (1 to 5):</label>
+      <select id="difficulty" required>
+        <option value="">Choose</option>
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label>Comments:</label>
+      <textarea id="comments" required></textarea>
+
+      <button type="submit">Submit Feedback</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const feedback = {
+        id: Date.now(),
+        member: member.value,
+        project: project.value,
+        task: task.value,
+        difficulty: difficulty.value,
+        comments: comments.value,
+        reply: '',
+        timestamp: new Date().toLocaleString()
+      };
+      const all = JSON.parse(localStorage.getItem('feedbacks')) || [];
+      all.push(feedback);
+      localStorage.setItem('feedbacks', JSON.stringify(all));
+      window.location.href = "success.html";
+    });
+  </script>
+</body>
+</html>
